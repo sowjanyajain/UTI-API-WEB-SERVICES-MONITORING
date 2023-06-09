@@ -26,7 +26,7 @@ newman.run({
     collection: sCollectionURL,
     reporters: ['htmlextra'],  // cli, json, junit, progress and emojitrain
     iterationCount: iCount,
-    environment: sEnvironmentURL,
+//     environment: sEnvironmentURL,
     timeoutRequest: iRequestTimeout,
     reporter: {
         htmlextra: {
