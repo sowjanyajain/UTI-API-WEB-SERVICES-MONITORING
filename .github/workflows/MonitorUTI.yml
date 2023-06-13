@@ -1,0 +1,49 @@
+name: Run UTI Collection with CRON
+
+env:
+  COLLECTION_URL_OR_JSON_FILE: https://api.postman.com/collections/17265974-d43c17a2-cfb9-4389-bf67-5fa78a934d41?access_key=PMAT-01H2T5KVT7ZYKTB3QDECWFZBBP
+  REQUEST_TIMEOUT: 120000
+  
+on:
+  schedule:
+  - cron: '57,27 3-14 * * *' 
+
+  workflow_dispatch:
+    inputs:
+      collectionURL:
+        description: 'Shared Collection URL or Json file. [E.g ReqRes.postman_collection.json]'
+        required: true
+        default: '$COLLECTION_URL_OR_JSON_FILE'
+      iteratorCnt:
+        description: 'Iteration count'
+        required: false
+        default: '1'
+      environmentURL:
+        description: 'Shared environment URL'
+        required: false
+      iRequestTimeout:
+        description: 'Request wait timeout'
+        required: false
+        default: '120000'
+      
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Install html extra
+      run: |
+        npm i newman-reporter-htmlextra
+        
+    - name: Run JS with args
+      run: |
+        node Run_Newman.js ${{ inputs.collectionURL || '$COLLECTION_URL_OR_JSON_FILE' }} ${{ inputs.iteratorCnt || '1' }} ${{ inputs.environmentURL }} ${{ inputs.iRequestTimeout || '$REQUEST_TIMEOUT' }}
+        ls
+
+    - uses: actions/upload-artifact@v3.1.2
+      with:
+        name: HTMLReport
+        path: newman
+        
