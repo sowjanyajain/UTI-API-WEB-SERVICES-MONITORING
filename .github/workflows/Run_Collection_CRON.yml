@@ -1,30 +1,37 @@
-name: Run Collection with CRON
+name: Run Collection
 
 env:
-  COLLECTION_URL_OR_JSON_FILE: https://api.postman.com/collections/6563878-60a2b653-c51f-483a-b9e0-015a2d1ca455?access_key=PMAT-01H0PVPP5KD0T9EYZPTZ8H95NG
+  COLLECTION_URL_OR_JSON: https://api.postman.com/collections/6563878-60a2b653-c51f-483a-b9e0-015a2d1ca455?access_key=PMAT-01H0PVPP5KD0T9EYZPTZ8H95NG
   REQUEST_TIMEOUT: 120000
+  EMIAL_IDS: mail2pradeepb@gmail.com,pradeep.babu@robosoftin.com
+  ENVIRONMENT_JSON: ''
   
 on:
-  schedule:
-  - cron: '55 * * * *'
+#   schedule:
+#   - cron: '25,53 3-14 * * 1-5'
 
   workflow_dispatch:
     inputs:
       collectionURL:
-        description: 'Shared Collection URL or Json file. [E.g ReqRes.postman_collection.json]'
+        description: 'Collection URL or Json file. [E.g CAMS_CRITICAL_SUPER_CRITICAL.postman_collection.json]'
         required: true
-        default: '$COLLECTION_URL_OR_JSON_FILE'
+        default: '$COLLECTION_URL_OR_JSON'
       iteratorCnt:
         description: 'Iteration count'
         required: false
         default: '1'
-      environmentURL:
-        description: 'Shared environment URL'
+      environmentJson:
+        description: 'Environment JSON file( *optional ). [E.g workspace.postman_globals.json]'
         required: false
+        default: $ENVIRONMENT_JSON
       iRequestTimeout:
         description: 'Request wait timeout'
         required: false
         default: '120000'
+      emailIds:
+        description: 'Notification email ids. Comma(,) separated, no spaces. [E.g "ram@xzy.in,sam@xyz.in"]'
+        required: true
+        default: $EMIAL_IDS   
       
 jobs:
   build:
@@ -33,17 +40,18 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - name: Install html extra
+    - name: Install packages
       run: |
         npm i newman-reporter-htmlextra
+        npm i nodemailer
+        npm i yargs
         
     - name: Run JS with args
       run: |
-        node Run_Newman.js ${{ inputs.collectionURL || '$COLLECTION_URL_OR_JSON_FILE' }} ${{ inputs.iteratorCnt || '1' }} ${{ inputs.environmentURL }} ${{ inputs.iRequestTimeout || '$REQUEST_TIMEOUT' }}
+        node Test_RunCollection_Mail.js --curl=${{ inputs.collectionURL || '$COLLECTION_URL_OR_JSON' }} --icnt=${{ inputs.iteratorCnt || '1' }} --ejson=${{ inputs.environmentJson || '$ENVIRONMENT_JSON' }} --timeout=${{ inputs.iRequestTimeout || '$REQUEST_TIMEOUT' }} --gurl=${{ github.repositoryUrl }} --grunid=${{ github.run_id }} --emails=$EMIAL_IDS
         ls
-
+        
     - uses: actions/upload-artifact@v3.1.2
       with:
         name: HTMLReport
         path: newman
-        
