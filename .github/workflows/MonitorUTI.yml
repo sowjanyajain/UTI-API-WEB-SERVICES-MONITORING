@@ -1,7 +1,7 @@
 name: Run UTI Collection with CRON
 
 env:
-  COLLECTION_URL_OR_JSON_FILE: https://api.postman.com/collections/17265974-d43c17a2-cfb9-4389-bf67-5fa78a934d41?access_key=PMAT-01H2T5KVT7ZYKTB3QDECWFZBBP
+  COLLECTION_URL_OR_JSON_FILE: https://api.postman.com/collections/17265974-92f30b79-da49-4ce3-8ba8-6eac647430a6?access_key=PMAT-01H2ZCZYFY5WAX7JAA6ATAN736
   REQUEST_TIMEOUT: 120000
   
 on:
